@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
+import { AntTable } from './common';
 
 const Counter = ({ value, onIncrement, onIncrementAsync, onDecrement, onIncrementIfOdd }) =>
       <p>

@@ -1,53 +1,58 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const extractLESS = new ExtractTextPlugin({
+  filename: 'main.css',
+  allChunks: true
+});
 
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
   entry: [
     'webpack-hot-middleware/client?reload=true',
-    path.join(__dirname, 'client', 'app'),
+    path.join(__dirname, 'client', 'components', 'style.less'),
+    path.join(__dirname, 'client', 'app')
   ],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/static/',
+    publicPath: '/static/'
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    extractLESS,
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development'),
-    }),
+      'process.env.NODE_ENV': JSON.stringify('development')
+    })
   ],
   module: {
-    rules: [{
-      test: /\.js$/,
-      use: [ 'babel-loader' ],
-      exclude: /node_modules/,
-      include: __dirname,
-    }],
-  },
-}
-
-
-// When inside Redux repo, prefer src to compiled version.
-// You can safely delete these lines in your project.
-var reduxSagaSrc = path.join(__dirname, '..', '..', 'src')
-var reduxNodeModules = path.join(__dirname, '..', '..', 'node_modules')
-var fs = require('fs')
-if (fs.existsSync(reduxSagaSrc) && fs.existsSync(reduxNodeModules)) {
-  // Resolve Redux to source
-  module.exports.resolve = { alias: { 'redux-saga': reduxSagaSrc } }
-  // Compile Redux from source
-  module.exports.module.rules.push({
-    test: /\.js$/,
-    use: [ 'babel-loader' ],
-    include: reduxSagaSrc,
-  })
-
-  // include sagaMonitor
-  module.exports.module.rules.push({
-    test: /\.js$/,
-    use: [ 'babel-loader' ],
-    include: path.join(__dirname, '..', 'sagaMonitor'),
-  })
-}
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules|build/,
+        loader: 'babel-loader?cacheDirectory=true'
+      },
+      {
+        test: /\.(ttf|eot|svg|woff)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'file-loader'
+      },
+      {
+        test: /\.less$/,
+        use: extractLESS.extract(['css-loader', 'less-loader'])
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      },
+      {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/,
+        loader: 'url-loader?limit=8192'
+      }
+    ]
+  }
+};
