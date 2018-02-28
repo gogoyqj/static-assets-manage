@@ -18,11 +18,6 @@ const Log = new mongoose.Schema({
         type: String,
         required: true,
         validate: val => _.isString(val) && val.length <= config.schema.maxDetailLength
-    },
-    stamp: { // 时间
-        type: Date,
-        required: true,
-        default: Date.now
     }
 });
 

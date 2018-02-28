@@ -1,13 +1,19 @@
 const isDev = process.env.NODE_ENV !== 'production';
 const mongoose = require('mongoose');
 const app = new (require('koa'))();
-const { mongo, port = 3001 } = require(`./config${isDev ? '.dev' : ''}`);
+const config = require(`./config${isDev ? '.dev' : ''}`);
 
+const { mongo, port = 3001 } = config;
 app.use(require('koa-static')(__dirname + '/static', {}));
+app.use(require('koa-body')());
 app.use(require('koa-cookie').default());
-require('./server/index').init(app);
+app.use(async (ctx, next) => {
+    ctx.config = config;
+    return next(ctx);
+});
+require('./server/index').init(app, config);
 if (isDev) {
-    require('./dev').init(app);
+    require('./dev').init(app, config);
 }
 
 mongoose

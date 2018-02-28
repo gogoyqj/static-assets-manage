@@ -1,6 +1,8 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
+const _ = require('lodash');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const isDev = process.env.NODE_ENV !== 'production';
 
 const extractLESS = new ExtractTextPlugin({
   filename: 'main.css',
@@ -8,24 +10,31 @@ const extractLESS = new ExtractTextPlugin({
 });
 
 module.exports = {
-  devtool: 'cheap-module-eval-source-map',
-  entry: [
-    'webpack-hot-middleware/client?reload=true',
+  devtool: isDev ? 'cheap-module-eval-source-map' : undefined,
+  entry: (isDev ? [
+    'webpack-hot-middleware/client?reload=true'
+  ] : []).concat([
     path.join(__dirname, 'client', 'components', 'style.less'),
     path.join(__dirname, 'client', 'app')
-  ],
+  ]),
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'static', 'static'),
     filename: 'bundle.js',
     publicPath: '/static/'
   },
-  plugins: [
+  plugins: _.compact([
     new webpack.HotModuleReplacementPlugin(),
     extractLESS,
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development')
+      'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production')
+    }),
+    !isDev && new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false,
+        drop_console: false
+      }
     })
-  ],
+  ]),
   module: {
     rules: [
       {
