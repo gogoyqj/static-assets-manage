@@ -3,9 +3,11 @@ const webpack = require('webpack');
 const _ = require('lodash');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const isDev = process.env.NODE_ENV !== 'production';
+const serverConfig = require(`./config${isDev ? '.dev' : ''}`);
+const { prefix = '' } = serverConfig;
 
 const extractLESS = new ExtractTextPlugin({
-  filename: 'main.css',
+  filename: 'stm-main.css',
   allChunks: true
 });
 
@@ -18,9 +20,9 @@ module.exports = {
     path.join(__dirname, 'client', 'app')
   ]),
   output: {
-    path: path.join(__dirname, 'static', 'static'),
-    filename: 'bundle.js',
-    publicPath: '/static/'
+    path: path.join(__dirname, 'build', prefix, 'static'),
+    filename: 'stm-main.js',
+    publicPath: `${prefix ? `/${prefix}` : ''}/static/`
   },
   plugins: _.compact([
     new webpack.HotModuleReplacementPlugin(),
