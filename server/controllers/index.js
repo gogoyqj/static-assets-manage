@@ -69,7 +69,7 @@ const add = async (ctx) => {
             description
         });
         // save as file
-        base64Img.imgSync(content, assetDir, assetId);
+        base64Img.imgSync(content, assetDir, encrypted);
         ctx.body = {
             code: 0,
             data: res
