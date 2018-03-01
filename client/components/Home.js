@@ -86,38 +86,44 @@ class Uploader extends Component {
   }
 }
 
+const width = `${100 / 6}%`;
 export default class Home extends Component {
   constructor(props) {
     super(props);
     this.assetColumns = [
       {
         title: '资源名',
-        width: '20%',
+        width,
         dataIndex: 'name',
         sorter: false,
         filter: false
       },
       {
         title: '描述信息',
-        width: '20%',
+        width,
         dataIndex: 'description',
         sorter: false,
         filter: false
       },
       {
         title: '上传者',
-        width: '20%',
+        width,
         dataIndex: 'owner',
         sorter: false,
         filter: false
       },
       {
         title: '资源地址',
-        width: '20%',
+        width,
         dataIndex: 'id',
         sorter: false,
         filter: false,
         render: id => (<a href={`${commonConfig.assetPrefix}${id}`} target="_blank">{commonConfig.assetPrefix}{id}</a>)
+      },
+      {
+        title: '上传时间',
+        width,
+        dataIndex: 'created_at'
       },
       {
         title: (
@@ -128,7 +134,7 @@ export default class Home extends Component {
             </Button>
           </div>
         ),
-        width: '20%',
+        width,
         dataIndex: 'id',
         sorter: false,
         filter: false,
