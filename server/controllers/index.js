@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const base64Img = require('base64-img');
 const { Assets } = require('../models');
 
 // 查询所有资源
@@ -68,8 +69,7 @@ const add = async (ctx) => {
             description
         });
         // save as file
-        fs.writeFileSync(path.join(assetDir, assetId),
-            content.replace(/^data:[^,]+,/g, ''), { encoding: 'base64' });
+        base64Img.imgSync(content, assetDir, assetId);
         ctx.body = {
             code: 0,
             data: res

@@ -46,8 +46,32 @@ class AssetForm extends Component {
 }
 
 class Uploader extends Component {
-  render() {
+  onChange = () => {
     const { onChange, beforeUpload } = this.props;
+    const file = this.file.files[0];
+    const { name, type, size } = file;
+    if (beforeUpload(file)) {
+      try {
+        var reader = new FileReader();
+        reader.onload = () => {
+          onChange({
+            name,
+            type,
+            content: reader.result
+          });
+        };
+        reader.onerror = (e) => {
+          message.error(`转换文件失败: ${e.message}`);
+        };
+        reader.readAsDataURL(file);
+      } catch (e) {
+        message.error(`上传文件失败: ${e.message}`);
+      }
+    } else {
+      onChange(undefined);
+    }
+  }
+  render() {
     return (
       <div>
         <input
@@ -55,30 +79,7 @@ class Uploader extends Component {
           ref={(file) => {
             this.file = file;
           }}
-          onChange={() => {
-            const file = this.file.files[0];
-            const { name, type, size } = file;
-            if (beforeUpload(file)) {
-              try {
-                var reader = new FileReader();
-                reader.onload = () => {
-                  onChange({
-                    name,
-                    type,
-                    content: reader.result
-                  });
-                };
-                reader.onerror = (e) => {
-                  message.error(`转换文件失败: ${e.message}`);
-                };
-                reader.readAsDataURL(file);
-              } catch (e) {
-                message.error(`上传文件失败: ${e.message}`);
-              }
-            } else {
-              onChange(undefined);
-            }
-          }}
+          onChange={this.onChange}
         />
       </div>
     );
