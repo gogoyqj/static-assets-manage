@@ -1,8 +1,9 @@
 const { list, add, update, remove } = require('./controllers');
 
 module.exports = {
-    init: (app) => {
-        const router = require('koa-router')({ prefix: '/api' });
+    init: (app, config) => {
+        const { prefix = '' } = config;
+        const router = require('koa-router')({ prefix: `${prefix}/api` });
 
         router
             .get('/asset/list', list)

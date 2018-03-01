@@ -6,6 +6,9 @@ const app = new (require('koa'))();
 const config = require(`./config${isDev ? '.dev' : ''}`);
 
 const { mongo, port = 3001 } = config;
+if (isDev) {
+    require('./dev').init(app, config);
+}
 app.use(require('koa-static')(__dirname + '/static', {}));
 app.use(require('koa-body')());
 app.use(require('koa-cookie').default());
@@ -18,9 +21,6 @@ if (fs.existsSync(path.join(__dirname, './login.js'))) {
     app.use(require('./login'));
 }
 require('./server/index').init(app, config);
-if (isDev) {
-    require('./dev').init(app, config);
-}
 
 mongoose
     .connect(mongo.url)
