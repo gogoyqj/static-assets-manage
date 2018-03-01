@@ -116,7 +116,7 @@ export default class Home extends Component {
         dataIndex: 'id',
         sorter: false,
         filter: false,
-        render: id => `${commonConfig.assetPrefix}${id}`
+        render: id => (<a href={`${commonConfig.assetPrefix}${id}`} target="_blank">{commonConfig.assetPrefix}{id}</a>)
       },
       {
         title: (
