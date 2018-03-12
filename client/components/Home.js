@@ -221,6 +221,7 @@ export default class Home extends Component {
             }).then((res) => {
               if (res.error) {
                 message.error(`${title}出错: ${res.message || res.error}`);
+                reject();
               } else {
                 message.success(`${title}成功`);
                 this.setState({
