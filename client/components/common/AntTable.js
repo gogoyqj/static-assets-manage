@@ -138,12 +138,22 @@ export default class AntTable extends Component {
 
   onSearch(dataIndex) {
     const keyword = this.state.filteredInfo[dataIndex];
+    const { fetchOnce } = this.props;
     const reg = new RegExp(keyword, 'gi');
-    const { originalData } = this.state;
-    const filteredData = originalData.filter(row => (row[dataIndex] !== undefined ? String(row[dataIndex]) : '').match(reg));
-    this.setState({
-      data: filteredData
-    });
+    // 服务器端过滤
+    if (fetchOnce !== true) {
+      const { sortedInfo, pagination, filteredInfo } = this.state;
+      if (pagination) {
+        pagination.current = 1;
+      }
+      this.handleTableChange(pagination, { filters: filteredInfo }, sortedInfo || {});
+    } else {
+      const { originalData } = this.state;
+      const filteredData = originalData.filter(row => (row[dataIndex] !== undefined ? String(row[dataIndex]) : '').match(reg));
+      this.setState({
+        data: filteredData
+      });
+    }
   }
 
   formatConfig(config) {

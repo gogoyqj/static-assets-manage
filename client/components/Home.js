@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import { Button, Popconfirm, Icon, Modal, Form, Input, message } from 'antd';
-import { AntTable, postJSON } from './common';
+import { AntTable, postJSON, get } from './common';
 import commonConfig from '../../config.common';
 
 const apiPrefix = 'api/asset/';
@@ -94,23 +94,17 @@ export default class Home extends Component {
       {
         title: '资源名',
         width,
-        dataIndex: 'name',
-        sorter: false,
-        filter: false
+        dataIndex: 'name'
       },
       {
         title: '描述信息',
         width,
-        dataIndex: 'description',
-        sorter: false,
-        filter: false
+        dataIndex: 'description'
       },
       {
         title: '上传者',
         width,
-        dataIndex: 'owner',
-        sorter: false,
-        filter: false
+        dataIndex: 'owner'
       },
       {
         title: '资源地址',

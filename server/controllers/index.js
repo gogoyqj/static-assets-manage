@@ -6,14 +6,25 @@ const { Assets } = require('../models');
 
 // 查询所有资源
 const list = async (ctx) => {
-    const { pageSize, current = 1 } = ctx.query;
+    let { pageSize, current = 1, sortField, sortOrder, filters } = ctx.query;
     try {
+        sortField = sortField || 'created_at';
+        try {
+            filters = JSON.parse(filters);
+            Object
+                .keys(filters)
+                .forEach((key) => {
+                    filters[key] = new RegExp(filters[key]);
+                });
+        } catch (e) {
+            filters = {};
+        }
         const [assets, total] = await Promise.all([
-            Assets.find({})
+            Assets.find(filters)
             .limit(Number(pageSize) || 10)
             .skip(pageSize * (current - 1))
             .lean()
-            .sort('-created_at')
+            .sort(`${sortOrder === 'ascend' ? '+1' : '-1'}${sortField}`)
             .exec(),
             Assets.count({})
         ]);
