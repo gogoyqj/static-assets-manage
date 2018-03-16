@@ -89,7 +89,7 @@ const add = async (ctx) => {
             ctx.body = {
                 code: 0,
                 data: {
-                    url: `${mailAssetPrefix}${assetId}`.replace(/[/]{2,}/g, '/')
+                    url: `${mailAssetPrefix}${assetId}`
                 }
             };
         } else {
