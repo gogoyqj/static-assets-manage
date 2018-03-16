@@ -19,12 +19,13 @@ const list = async (ctx) => {
         } catch (e) {
             filters = {};
         }
+        console.log(`${sortOrder === 'ascend' ? '+1' : '-1'}${sortField}`)
         const [assets, total] = await Promise.all([
             Assets.find(filters)
             .limit(Number(pageSize) || 10)
             .skip(pageSize * (current - 1))
             .lean()
-            .sort(`${sortOrder === 'ascend' ? '+1' : '-1'}${sortField}`)
+            .sort(`${sortOrder === 'ascend' ? '+' : '-'}${sortField}`)
             .exec(),
             Assets.count({})
         ]);
