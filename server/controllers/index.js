@@ -3,6 +3,10 @@ const fs = require('fs');
 const crypto = require('crypto');
 const base64Img = require('base64-img');
 const { Assets } = require('../models');
+const {
+    assetPrefix,
+    mailAssetPrefix = assetPrefix
+} = require('../../config.common');
 
 // 查询所有资源
 const list = async (ctx) => {
@@ -19,7 +23,6 @@ const list = async (ctx) => {
         } catch (e) {
             filters = {};
         }
-        console.log(`${sortOrder === 'ascend' ? '+1' : '-1'}${sortField}`)
         const [assets, total] = await Promise.all([
             Assets.find(filters)
             .limit(Number(pageSize) || 10)
@@ -56,17 +59,23 @@ const add = async (ctx) => {
             file: {
                 name: filename,
                 content
-            }
+            },
+            mail
         }
     } = request;
     const { userName } = cookie;
-    const { assetServer: { path: assetDir } } = config;
+    const {
+        assetServer: {
+            path: assetDir,
+            mailPath: mailDir = assetDir
+        }
+    } = config;
     try {
-        const ext = path.extname(filename);
+        const ext = mail ? '.png' : path.extname(filename);
         // 加密
         let encrypted = '';
         const cip = crypto.createCipher('blowfish', 'asset');
-        encrypted += cip.update(`${userName}_${Date.now()}`, 'binary', 'hex');
+        encrypted += cip.update(`${userName || filename}_${Date.now()}`, 'binary', 'hex');
         encrypted += cip.final('hex');
         // 解密
         // let decrypted = '';
@@ -74,18 +83,29 @@ const add = async (ctx) => {
         // decrypted += decipher.update(encrypted, 'hex', 'binary');
         // decrypted += decipher.final('binary');
         const assetId = `${encrypted}${ext}`;
-        const res = await Assets.insertMany({
-            id: assetId,
-            name,
-            owner: userName,
-            description
-        });
-        // save as file
-        base64Img.imgSync(content, assetDir, encrypted);
-        ctx.body = {
-            code: 0,
-            data: res
-        };
+        if (mail) {
+            // save as file
+            base64Img.imgSync(content, mailDir, encrypted);
+            ctx.body = {
+                code: 0,
+                data: {
+                    url: `${mailAssetPrefix}${assetId}`.replace(/[/]{2,}/g, '/')
+                }
+            };
+        } else {
+            const res = await Assets.insertMany({
+                id: assetId,
+                name,
+                owner: userName,
+                description
+            });
+            // save as file
+            base64Img.imgSync(content, assetDir, encrypted);
+            ctx.body = {
+                code: 0,
+                data: res
+            };
+        }
     } catch (err) {
         ctx.body = {
             code: 500,
