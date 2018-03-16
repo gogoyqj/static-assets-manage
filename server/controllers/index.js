@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const base64Img = require('base64-img');
+const moment = require('moment');
 const { Assets } = require('../models');
 const {
     assetPrefix,
@@ -72,10 +73,12 @@ const add = async (ctx) => {
     } = config;
     try {
         const ext = mail ? '.png' : path.extname(filename);
+        const ymd = mail ? moment().format('YYYYMMDD') : Date.now();
+        const firstKey = mail ? filename : userName;
         // 加密
         let encrypted = '';
         const cip = crypto.createCipher('blowfish', 'asset');
-        encrypted += cip.update(`${userName || filename}_${Date.now()}`, 'binary', 'hex');
+        encrypted += cip.update(`${firstKey}_${ymd}`, 'binary', 'hex');
         encrypted += cip.final('hex');
         // 解密
         // let decrypted = '';
@@ -85,11 +88,11 @@ const add = async (ctx) => {
         const assetId = `${encrypted}${ext}`;
         if (mail) {
             // save as file
-            base64Img.imgSync(content, mailDir, encrypted);
+            base64Img.imgSync(content, `${mailDir}/${ymd}`, encrypted);
             ctx.body = {
                 code: 0,
                 data: {
-                    url: `${mailAssetPrefix}${assetId}`
+                    url: `${mailAssetPrefix}${ymd}/${assetId}`
                 }
             };
         } else {
