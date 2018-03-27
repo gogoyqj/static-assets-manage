@@ -2,6 +2,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
+const cors = require('koa2-cors');
 const app = new (require('koa'))();
 const config = require(`./config${isDev ? '.dev' : ''}`);
 
@@ -12,6 +13,7 @@ if (isDev) {
 app.use(require('koa-static')(__dirname + '/static', {}));
 app.use(require('koa-body')());
 app.use(require('koa-cookie').default());
+app.use(cors());
 app.use(async (ctx, next) => {
     ctx.config = config;
     return next(ctx);
