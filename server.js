@@ -11,7 +11,7 @@ if (isDev) {
     require('./dev').init(app, config);
 }
 app.use(require('koa-static')(__dirname + '/static', {}));
-app.use(require('koa-body')());
+app.use(require('koa-body')({ multipart: true }));
 app.use(require('koa-cookie').default());
 app.use(cors());
 app.use(async (ctx, next) => {

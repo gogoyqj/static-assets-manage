@@ -54,17 +54,21 @@ const list = async (ctx) => {
 const add = async (ctx) => {
     const { request, cookie, config } = ctx;
     const {
-        body: {
-            name,
-            description = '',
-            file: {
-                name: filename,
-                content
-            },
-            mail
-        }
+        body
     } = request;
-    const { userName } = cookie;
+    let {
+        name,
+        files: {
+            file
+        } = {},
+        description = '',
+        file: {
+            name: filename,
+            content
+        } = {},
+        mail
+    } = body;
+    const { userName } = cookie || {};
     const {
         assetServer: {
             path: assetDir,
@@ -72,6 +76,12 @@ const add = async (ctx) => {
         }
     } = config;
     try {
+        if (file) {
+            filename = file.name;
+            if (!name) {
+                name = filename;
+            }
+        }
         const ext = mail ? '.png' : path.extname(filename);
         const ymd = mail ? moment().format('YYYYMMDD') : Date.now();
         const firstKey = mail ? filename : userName;
@@ -103,14 +113,28 @@ const add = async (ctx) => {
                 description
             });
             // save as file
-            base64Img.imgSync(content, assetDir, encrypted);
+            if (file) {
+                const reader = fs.createReadStream(file.path);
+                const stream = fs.createWriteStream(`${assetDir}/${assetId}`);
+                reader.pipe(stream);
+            } else {
+                base64Img.imgSync(content, assetDir, encrypted);
+            }
             ctx.body = {
+                url: `${assetPrefix}/${assetId}`,
+                image_src: `${assetPrefix}/${assetId}`,
+                original: filename,
+                name: assetId,
+                type: ext,
+                state: 'SUCCESS',
+                status: 'success',
                 code: 0,
                 data: res
             };
         }
     } catch (err) {
         ctx.body = {
+            state: err.message,
             code: 500,
             message: err.message
         };
