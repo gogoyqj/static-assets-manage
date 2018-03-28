@@ -52,7 +52,7 @@ export default class AntTable extends Component {
   }
   
   componentDidMount() {
-    this.fetch({}, 'force');
+    this.fetch({ filters: this.state.filteredInfo }, 'force');
   }
 
   componentWillReceiveProps(nextProps) {
@@ -71,7 +71,7 @@ export default class AntTable extends Component {
       if (this.state.pagination) {
         this.state.pagination.current = 1;
       }
-      this.fetch({}, 'force', nextProps);
+      this.fetch({ filters: this.state.filteredInfo }, 'force', nextProps);
     }
   }
 
