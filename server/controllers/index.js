@@ -26,12 +26,12 @@ const list = async (ctx) => {
         }
         const [assets, total] = await Promise.all([
             Assets.find(filters)
-            .limit(Number(pageSize) || 10)
-            .skip(pageSize * (current - 1))
-            .lean()
-            .sort(`${sortOrder === 'ascend' ? '+' : '-'}${sortField}`)
-            .exec(),
-            Assets.count({})
+                .limit(Number(pageSize) || 10)
+                .skip(pageSize * (current - 1))
+                .lean()
+                .sort(`${sortOrder === 'ascend' ? '+' : '-'}${sortField}`)
+                .exec(),
+            Assets.count(filters)
         ]);
 
         ctx.body = {

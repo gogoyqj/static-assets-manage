@@ -88,7 +88,7 @@ export default class AntTable extends Component {
     this.fetch({
       sortField: field,
       sortOrder: order,
-      ...filters
+      filters
     });
   }
 
@@ -98,6 +98,19 @@ export default class AntTable extends Component {
     const { pageSize, current } = this.state.pagination;
     const { field, order } = this.state.sortedInfo || {};
     const newParams = { pageSize, current, sortField: field, sortOrder: order, ...params, ...query };
+    let newFilters;
+    if (newParams.filters) {
+      newFilters = {};
+      Object
+        .keys(newParams.filters)
+        .forEach((k) => {
+          const v = newParams.filters[k];
+          if (null != v && v != '') {
+            newFilters[k] = v;
+          }
+        });
+      newParams.filters = newFilters;
+    }
     let data;
     if (fetch && (fetchOnce !== true || force)) {
       this.lastFetchId += 1;
@@ -146,7 +159,7 @@ export default class AntTable extends Component {
       if (pagination) {
         pagination.current = 1;
       }
-      this.handleTableChange(pagination, { filters: filteredInfo }, sortedInfo || {});
+      this.handleTableChange(pagination, filteredInfo, sortedInfo || {});
     } else {
       const { originalData } = this.state;
       const filteredData = originalData.filter(row => (row[dataIndex] !== undefined ? String(row[dataIndex]) : '').match(reg));
