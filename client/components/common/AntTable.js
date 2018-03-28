@@ -38,7 +38,7 @@ export default class AntTable extends Component {
     super(props);
     const { pagination = {} } = props;
     this.state = {
-      filteredInfo: {},
+      filteredInfo: props.filter || {},
       sortedInfo: null,
       data: props.config.dataSource || [],
       originalData: props.config.dataSource || [], // 用于过滤以及恢复过滤

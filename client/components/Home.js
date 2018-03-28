@@ -148,6 +148,15 @@ export default class Home extends Component {
     this.state = {
       fetch: fetchUrl
     };
+    this.filter = {};
+    try {
+      let userName = document.cookie.split(';').find(v => (v.indexOf('userName') !== -1));
+      if (userName) {
+        this.filter.owner = userName.split('=')[1].trim();
+      }
+    } catch (e) {
+      console.log('userName', userName);
+    }
   }
   beforeUpload = (file) => {
     const isJPG = file.type.match(/image\/(jp[e]?g|png|gif|webp)/);
@@ -250,8 +259,9 @@ export default class Home extends Component {
       <div>
         <AntTable
           config={{
-            columns: this.assetColumns
+            columns: this.assetColumns 
           }}
+          filter={this.filter}
           fetch={fetch}
         />
       </div>
