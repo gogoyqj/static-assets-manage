@@ -76,13 +76,16 @@ const add = async (ctx) => {
         }
     } = config;
     try {
+        if (content.length > 10737418240) {
+            throw Error(`文件体积过大 ${content.length}`);
+        }
         if (file) {
             filename = file.name;
             if (!name) {
                 name = filename;
             }
         }
-        const ext = mail ? '.png' : path.extname(filename);
+        const ext = mail ? '.png' : path.extname(filename).replace(/jpeg/g, 'jpg');
         const ymd = mail ? moment().format('YYYYMMDD') : Date.now();
         const firstKey = mail ? filename : userName;
         // 加密
